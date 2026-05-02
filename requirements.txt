@@ -1,2 +1,5 @@
 flask
-numpy
+flask_sqlalchemy
+flask_login
+gunicorn
+numpys

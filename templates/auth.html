@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Finova - Acceso</title>
+
+<style>
+:root{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --accent:#6366f1;
+    --accent2:#8b5cf6;
+    --text:#e2e8f0;
+}
+
+body{
+    margin:0;
+    font-family:'Segoe UI';
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    width:350px;
+    background:var(--card);
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    text-align:center;
+}
+
+h2{
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:8px;
+    border:1px solid #334155;
+    background:#020617;
+    color:white;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(45deg,var(--accent),var(--accent2));
+    color:white;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.switch{
+    margin-top:15px;
+    font-size:14px;
+    cursor:pointer;
+    color:#94a3b8;
+}
+
+.switch:hover{
+    color:white;
+}
+
+.hidden{
+    display:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="loginBox">
+<h2>Iniciar Sesión</h2>
+
+<form method="POST" action="/login">
+<input name="username" placeholder="Usuario" required>
+<input name="password" type="password" placeholder="Contraseña" required>
+<button>Entrar</button>
+</form>
+
+<div class="switch" onclick="mostrarRegistro()">
+¿No tienes cuenta? Regístrate
+</div>
+</div>
+
+<div id="registerBox" class="hidden">
+<h2>Crear Cuenta</h2>
+
+<form method="POST" action="/register">
+<input name="username" placeholder="Usuario" required>
+<input name="password" type="password" placeholder="Contraseña" required>
+<button>Registrarse</button>
+</form>
+
+<div class="switch" onclick="mostrarLogin()">
+¿Ya tienes cuenta? Inicia sesión
+</div>
+</div>
+
+</div>
+
+<script>
+function mostrarRegistro(){
+document.getElementById("loginBox").classList.add("hidden");
+document.getElementById("registerBox").classList.remove("hidden");
+}
+
+function mostrarLogin(){
+document.getElementById("registerBox").classList.add("hidden");
+document.getElementById("loginBox").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>

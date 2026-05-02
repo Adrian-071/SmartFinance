@@ -1,265 +1,270 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>SmartFinance Pro</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<title>Finova Pro</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: #f5f9ff;
-            color: #1e293b;
-        }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-        .container {
-            display: flex;
-        }
+<style>
+:root{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --accent:#6366f1;
+    --accent2:#8b5cf6;
+    --text:#e2e8f0;
+}
 
-        /* SIDEBAR */
-        .sidebar {
-            width: 240px;
-            height: 100vh;
-            background: linear-gradient(180deg, #38bdf8, #22c55e);
-            padding: 20px;
-            color: white;
-        }
+body{
+    margin:0;
+    font-family:'Segoe UI';
+    background:var(--bg);
+    color:var(--text);
+}
 
-        .sidebar h2 {
-            text-align: center;
-        }
+.sidebar{
+    width:240px;
+    height:100vh;
+    position:fixed;
+    background:linear-gradient(180deg,#1e3a8a,#6d28d9);
+    padding:20px;
+}
 
-        .sidebar button {
-            width: 100%;
-            margin: 12px 0;
-            padding: 14px;
-            border: none;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+.sidebar h1{
+    text-align:center;
+    font-size:28px;
+}
 
-        .sidebar button:hover {
-            background: white;
-            color: #22c55e;
-        }
+.sidebar button{
+    width:100%;
+    margin:10px 0;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:rgba(255,255,255,0.1);
+    color:white;
+    cursor:pointer;
+}
 
-        /* MAIN */
-        .main {
-            flex: 1;
-            padding: 40px;
-        }
+.main{
+    margin-left:260px;
+    padding:30px;
+}
 
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            animation: fadeIn 0.6s ease;
-        }
+.card{
+    background:var(--card);
+    padding:25px;
+    border-radius:15px;
+    margin-bottom:20px;
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px);}
-            to { opacity: 1; transform: translateY(0);}
-        }
+input{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border-radius:8px;
+    border:1px solid #334155;
+    background:#020617;
+    color:white;
+}
 
-        input {
-            padding: 14px;
-            margin: 8px;
-            width: 280px;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-            font-size: 15px;
-            transition: 0.3s;
-        }
+button.action{
+    background:linear-gradient(45deg,var(--accent),var(--accent2));
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    color:white;
+    cursor:pointer;
+}
 
-        input:focus {
-            border: 1px solid #38bdf8;
-            box-shadow: 0 0 8px rgba(56,189,248,0.4);
-        }
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
 
-        button.submit {
-            background: linear-gradient(45deg, #38bdf8, #22c55e);
-            border: none;
-            padding: 14px 25px;
-            border-radius: 12px;
-            cursor: pointer;
-            color: white;
-            font-weight: bold;
-            transition: 0.3s;
-        }
+.metric{
+    background:#020617;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+}
 
-        button.submit:hover {
-            transform: scale(1.05);
-        }
+#decisionBox{
+    margin-top:20px;
+    padding:20px;
+    border-radius:12px;
+    font-weight:bold;
+}
 
-        .hidden {
-            display: none;
-        }
+.excelente{background:rgba(34,197,94,0.2);color:#22c55e;}
+.aceptable{background:rgba(251,191,36,0.2);color:#facc15;}
+.riesgo{background:rgba(239,68,68,0.2);color:#ef4444;}
 
-        .hero {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.historial-item{
+    background:#020617;
+    padding:10px;
+    border-radius:8px;
+    margin:5px 0;
+}
 
-        .hero img {
-            width: 420px;
-            border-radius: 20px;
-        }
-
-        .hero-text h1 {
-            font-size: 40px;
-            color: #0ea5e9;
-        }
-
-        .resultado {
-            margin-top: 20px;
-            font-size: 20px;
-        }
-
-        .info-section {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .info-box {
-            background: #f1f5f9;
-            padding: 20px;
-            border-radius: 15px;
-        }
-
-        /* LOADER */
-        #loader {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            z-index: 999;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid #e2e8f0;
-            border-top: 6px solid #38bdf8;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
-
-    </style>
+.hidden{display:none;}
+</style>
 </head>
 
 <body>
 
-<div id="loader">
-    <div class="spinner"></div>
-    <p>Calculando inversión...</p>
+<div class="sidebar">
+<h1>🚀 Finova</h1>
+
+<button onclick="mostrar('inicio')">Inicio</button>
+<button onclick="mostrar('simulador')">Simulador</button>
+<button onclick="mostrar('historial')">Historial</button>
+<button onclick="mostrar('educacion')">Educación</button>
+<button onclick="logout()">Salir</button>
 </div>
 
-<div class="container">
+<div class="main">
 
-    <div class="sidebar">
-        <h2>💼 SmartFinance</h2>
-        <button onclick="mostrar('inicio')">🏠 Inicio</button>
-        <button onclick="mostrar('calc')">📊 Calculadora</button>
-        <button onclick="mostrar('info')">📘 Educación</button>
-    </div>
+<div id="inicio" class="card">
+<h1>Bienvenido a Finova</h1>
+<p>Analiza inversiones como un profesional</p>
+</div>
 
-    <div class="main">
+<div id="simulador" class="card hidden">
 
-        <div id="inicio" class="card">
-            <div class="hero">
-                <div class="hero-text">
-                    <h1>Invierte Inteligente 🚀</h1>
-                    <p>Analiza tus inversiones con herramientas profesionales.</p>
-                </div>
-                <img src="https://images.unsplash.com/photo-1569025690938-a00729c9e1c9">
-            </div>
-        </div>
+<h2>Simulador</h2>
 
-        <div id="calc" class="card hidden">
-            <h2>📊 Calculadora</h2>
+<input id="inversion" placeholder="Inversión (-10000)">
+<input id="tasa" placeholder="Tasa (0.1)">
 
-            <form method="POST" onsubmit="mostrarLoader()">
-                <input name="inversion" placeholder="💰 Inversión inicial"><br>
-                <input name="tasa" placeholder="📉 Tasa (0.1)"><br>
-                <input name="flujos" placeholder="📊 Flujos"><br>
-                <button class="submit" id="btnCalcular">Calcular</button>
-            </form>
+<div id="flujos-container">
+<input class="flujo" placeholder="Año 1">
+</div>
 
-            {% if resultado %}
-            <div class="resultado">
-                <p><b>VPN:</b> {{resultado.vpn}}</p>
-                <p><b>TIR:</b> {{resultado.tir}}%</p>
-                <p><b>{{resultado.decision}}</b></p>
-            </div>
-            {% endif %}
+<button class="action" onclick="agregarFlujo()">➕ Año</button>
+<button class="action" onclick="calcular()">Calcular</button>
 
-            {% if grafica %}
-            <canvas id="grafica"></canvas>
-            <script>
-            new Chart(document.getElementById("grafica"), {
-                type: 'line',
-                data: {
-                    labels: {{ grafica.tasas }},
-                    datasets: [{
-                        label: 'VPN',
-                        data: {{ grafica.vpns }},
-                        borderWidth: 3
-                    }]
-                }
-            });
-            </script>
-            {% endif %}
-        </div>
+<div id="resultados" class="hidden">
 
-        <div id="info" class="card hidden">
-            <h2>📘 Educación</h2>
+<h2>Resultados</h2>
 
-            <div class="info-section">
-                <div class="info-box"><h3>📊 VPN</h3><p>Valor presente de flujos futuros.</p></div>
-                <div class="info-box"><h3>📈 TIR</h3><p>Rentabilidad del proyecto.</p></div>
-                <div class="info-box"><h3>💡 Decisiones</h3><p>Ayuda a invertir mejor.</p></div>
-                <div class="info-box"><h3>🚀 Uso real</h3><p>Usado por empresas.</p></div>
-            </div>
-        </div>
+<div class="grid">
+<div class="metric"><h3>VPN</h3><p id="vpn"></p></div>
+<div class="metric"><h3>TIR</h3><p id="tir"></p></div>
+</div>
 
-    </div>
+<canvas id="grafica"></canvas>
+
+<div id="decisionBox"><p id="ia"></p></div>
+
+<button class="action" onclick="descargarPDF()">Descargar PDF</button>
+
+</div>
+
+</div>
+
+<div id="historial" class="card hidden">
+<h2>Historial</h2>
+<div id="lista"></div>
+</div>
+
+<div id="educacion" class="card hidden">
+<h2>Conceptos</h2>
+<p><b>VPN:</b> Mide si ganas o pierdes dinero.</p>
+<p><b>TIR:</b> Rentabilidad del proyecto.</p>
+<p><b>Regla:</b> Si VPN > 0 y TIR > tasa → invertir.</p>
+</div>
+
 </div>
 
 <script>
-function mostrar(id) {
-    document.getElementById("inicio").classList.add("hidden");
-    document.getElementById("calc").classList.add("hidden");
-    document.getElementById("info").classList.add("hidden");
-    document.getElementById(id).classList.remove("hidden");
+
+function mostrar(id){
+["inicio","simulador","historial","educacion"].forEach(x=>{
+document.getElementById(x).classList.add("hidden");
+});
+document.getElementById(id).classList.remove("hidden");
+
+if(id==="historial") cargarHistorial();
 }
 
-function mostrarLoader() {
-    document.getElementById("loader").style.display = "flex";
-    document.getElementById("btnCalcular").innerText = "Procesando...";
+function agregarFlujo(){
+const input=document.createElement("input");
+input.classList.add("flujo");
+document.getElementById("flujos-container").appendChild(input);
 }
 
-window.onload = function() {
-    {% if resultado %}
-        mostrar('calc');
-    {% else %}
-        mostrar('inicio');
-    {% endif %}
+async function calcular(){
+
+const inversion=document.getElementById("inversion").value;
+const tasa=document.getElementById("tasa").value;
+const flujos=[...document.querySelectorAll(".flujo")].map(i=>i.value);
+
+const res=await fetch("/calcular",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({inversion,tasa,flujos})
+});
+
+const data=await res.json();
+
+document.getElementById("resultados").classList.remove("hidden");
+
+document.getElementById("vpn").innerText="$"+data.vpn;
+document.getElementById("tir").innerText=data.tir+"%";
+
+const box=document.getElementById("decisionBox");
+box.classList.remove("excelente","aceptable","riesgo");
+
+if(data.vpn>1000){box.classList.add("excelente");}
+else if(data.vpn>0){box.classList.add("aceptable");}
+else{box.classList.add("riesgo");}
+
+document.getElementById("ia").innerText=data.analisis;
+
+new Chart(document.getElementById("grafica"),{
+type:"line",
+data:{
+labels:data.tasas,
+datasets:[{label:"VPN",data:data.vpns}]
 }
+});
+
+}
+
+async function cargarHistorial(){
+const res=await fetch("/historial");
+const data=await res.json();
+
+const lista=document.getElementById("lista");
+lista.innerHTML="";
+
+data.reverse().forEach(p=>{
+const div=document.createElement("div");
+div.classList.add("historial-item");
+div.innerHTML=`📅 ${p.fecha} | VPN: $${p.vpn} | TIR: ${p.tir}%`;
+lista.appendChild(div);
+});
+}
+
+async function descargarPDF(){
+const { jsPDF } = window.jspdf;
+const pdf = new jsPDF();
+
+const canvas = await html2canvas(document.body);
+const img = canvas.toDataURL("image/png");
+
+pdf.addImage(img, 'PNG', 0, 0, 210, 297);
+pdf.save("finova.pdf");
+}
+
+function logout(){
+window.location="/logout";
+}
+
 </script>
 
 </body>
