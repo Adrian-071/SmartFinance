@@ -15,18 +15,20 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return Usuario.query.get(int(user_id))
 
 
+# 🔥 RUTA PRINCIPAL (SIN LOGIN PARA EVITAR ERROR EN RENDER)
 @app.route("/")
-@login_required
 def index():
     return render_template("index.html")
 
 
-@app.route("/login", methods=["GET","POST"])
+# LOGIN
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         user = Usuario.query.filter_by(username=request.form["username"]).first()
@@ -38,6 +40,7 @@ def login():
     return render_template("auth.html")
 
 
+# REGISTER
 @app.route("/register", methods=["POST"])
 def register():
     user_exist = Usuario.query.filter_by(username=request.form["username"]).first()
@@ -57,6 +60,7 @@ def register():
     return redirect("/login")
 
 
+# LOGOUT
 @app.route("/logout")
 @login_required
 def logout():
@@ -64,6 +68,7 @@ def logout():
     return redirect("/login")
 
 
+# CALCULAR VPN Y TIR
 @app.route("/calcular", methods=["POST"])
 @login_required
 def calcular():
@@ -78,7 +83,7 @@ def calcular():
         flujos = [inversion] + flujos
 
         if len(flujos) < 2:
-            return jsonify({"error":"Debes ingresar al menos un flujo"})
+            return jsonify({"error": "Debes ingresar al menos un flujo"})
 
         vpn = calcular_vpn(flujos, tasa)
         tir = calcular_tir(flujos)
@@ -106,21 +111,22 @@ def calcular():
         db.session.add(nuevo)
         db.session.commit()
 
-        tasas = [i/100 for i in range(1,50)]
-        vpns = [calcular_vpn(flujos,t) for t in tasas]
+        tasas = [i / 100 for i in range(1, 50)]
+        vpns = [calcular_vpn(flujos, t) for t in tasas]
 
         return jsonify({
-            "vpn": round(vpn,2),
-            "tir": round(tir*100,2) if tir else 0,
+            "vpn": round(vpn, 2),
+            "tir": round(tir * 100, 2) if tir else 0,
             "analisis": analisis,
             "tasas": tasas,
             "vpns": vpns
         })
 
     except:
-        return jsonify({"error":"Datos inválidos"})
+        return jsonify({"error": "Datos inválidos"})
 
 
+# HISTORIAL
 @app.route("/historial")
 @login_required
 def historial():
@@ -130,14 +136,15 @@ def historial():
     data = []
     for p in proyectos:
         data.append({
-            "vpn": round(p.vpn,2),
-            "tir": round(p.tir*100,2) if p.tir else 0,
+            "vpn": round(p.vpn, 2),
+            "tir": round(p.tir * 100, 2) if p.tir else 0,
             "fecha": p.fecha.strftime("%Y-%m-%d")
         })
 
     return jsonify(data)
 
 
+# CREAR BD Y RUN LOCAL
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
